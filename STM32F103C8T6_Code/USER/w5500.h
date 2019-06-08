@@ -207,12 +207,12 @@
 #define W5500_SCS		GPIO_Pin_4	//定义W5500的CS引脚	 
 #define W5500_SCS_PORT	GPIOA
 	
-#define W5500_RST		GPIO_Pin_5	//定义W5500的RST引脚
-#define W5500_RST_PORT	GPIOC
+#define W5500_RST		GPIO_Pin_0	//定义W5500的RST引脚
+#define W5500_RST_PORT	GPIOB
 
 
-#define W5500_INT		GPIO_Pin_4	//定义W5500的INT引脚
-#define W5500_INT_PORT	GPIOC
+#define W5500_INT		GPIO_Pin_1	//定义W5500的INT引脚
+#define W5500_INT_PORT	GPIOB
 
 /***************----- 网络参数变量定义 -----***************/
 extern unsigned char Gateway_IP[4];	//网关IP地址 

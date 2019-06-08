@@ -78,7 +78,7 @@ void SPI_Configuration(void)
 	GPIO_InitTypeDef 	GPIO_InitStructure;
 	SPI_InitTypeDef   	SPI_InitStructure;	   
 
-  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_SPI1 | RCC_APB2Periph_AFIO, ENABLE);	
+  	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA  | RCC_APB2Periph_SPI1 | RCC_APB2Periph_AFIO, ENABLE);	
 
 	/* ³õÊ¼»¯SCK¡¢MISO¡¢MOSIÒý½Å */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;

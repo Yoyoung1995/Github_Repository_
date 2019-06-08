@@ -88,7 +88,7 @@ void Load_Net_Parameters(void)
 	S0_DIP[0]=192;//加载端口0的目的IP地址
 	S0_DIP[1]=168;
 	S0_DIP[2]=1;
-	S0_DIP[3]=190;
+	S0_DIP[3]=100;
 	
 	S0_DPort[0] = 0x17;//加载端口0的目的端口号6000
 	S0_DPort[1] = 0x70;
