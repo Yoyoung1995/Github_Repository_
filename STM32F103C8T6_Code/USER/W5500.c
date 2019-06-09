@@ -65,6 +65,40 @@ void W5500_GPIO_Configuration(void)
 	GPIO_ResetBits(W5500_RST_PORT, W5500_RST);
 }
 
+
+void Yoyung_GPIO_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;	
+
+	/* GPIO引脚初始化配置(PA1,2,3,8,9,10,11,12,15) */
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_8 
+                          |GPIO_Pin_9|GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_12 
+                          |GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	GPIO_SetBits(GPIOA, GPIO_Pin_1|GPIO_Pin_2|GPIO_Pin_3|GPIO_Pin_8 
+                          |GPIO_Pin_9|GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_12 
+                          |GPIO_Pin_15);
+	
+  /*Configure GPIO pins : PB10 PB11 PB12 PB13 
+                           PB14 PB15 PB3 PB4 
+                           PB5 PB6 PB7 */
+	GPIO_InitStructure.GPIO_Pin  = GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_12|GPIO_Pin_13 
+                          |GPIO_Pin_14|GPIO_Pin_15|GPIO_Pin_3|GPIO_Pin_4 
+                          |GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Speed=GPIO_Speed_2MHz;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_OD;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+	GPIO_SetBits(GPIOB, GPIO_Pin_10|GPIO_Pin_11|GPIO_Pin_12|GPIO_Pin_13 
+                          |GPIO_Pin_14|GPIO_Pin_15|GPIO_Pin_3|GPIO_Pin_4 
+                          |GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7);	
+													
+	  /*Configure GPIO pin : PB8 */
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;   //上拉输入
+  GPIO_Init(GPIOB, &GPIO_InitStructure);
+}
 /*******************************************************************************
 * 函数名  : SPI_Configuration
 * 描述    : W5500 SPI初始化配置(STM32 SPI1)

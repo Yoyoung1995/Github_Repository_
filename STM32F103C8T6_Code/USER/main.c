@@ -32,6 +32,8 @@ void Timer2_Init_Config(void);		//Timer2初始化配置
 void System_Initialization(void);	//STM32系统初始化函数(初始化STM32时钟及外设)
 void Delay(unsigned int d);			//延时函数(ms)
 
+extern void Yoyung_GPIO_Init(void);
+
 unsigned int Timer2_Counter=0; //Timer2定时器计数变量(ms)
 unsigned int W5500_Send_Delay_Counter=0; //W5500发送延时计数变量(ms)
 
@@ -166,6 +168,7 @@ int main(void)
 	Load_Net_Parameters();		//装载网络参数	
 	W5500_Hardware_Reset();		//硬件复位W5500
 	W5500_Initialization();		//W5500初始货配置
+	Yoyung_GPIO_Init();				// GPIO/开关系统 初始化
 	while (1)
 	{
 		W5500_Socket_Set();//W5500端口初始化配置
@@ -176,6 +179,73 @@ int main(void)
 		{
 			S0_Data&=~S_RECEIVE;
 			Process_Socket_Data(0);//W5500接收并发送接收到的数据
+			
+			//---- Add By Yoyung ---  应用协议
+			switch(Rx_Buffer[0])
+			{
+				case 1: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_1);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_1);  //关
+								break;
+				case 2: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_2);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_2);  //关
+								break;		
+				case 3: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_3);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_3);  //关
+								break;
+				case 4: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_8);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_8);  //关
+								break;		
+				case 5: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_9);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_9);  //关
+								break;
+				case 6: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_10);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_10);  //关
+								break;		
+				case 7: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_11);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_11);  //关
+								break;
+				case 8: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_12);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_12);  //关
+								break;
+				case 9: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOA, GPIO_Pin_15);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOA, GPIO_Pin_15);  //关
+								break;
+				case 10: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_3);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_3);  //关
+								break;							
+				case 11: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_4);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_4);  //关
+								break;								
+				case 12: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_5);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_5);  //关
+								break;							
+				case 13: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_6);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_6);  //关
+								break;								
+				case 14: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_7);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_7);  //关
+								break;					
+				case 15: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_10);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_10);  //关
+								break;					
+				case 16: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_11);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_11);  //关
+								break;					
+				case 17: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_12);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_12);  //关
+								break;					
+				case 18: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_13);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_13);  //关
+								break;					
+				case 19: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_14);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_14);  //关
+								break;					
+				case 20: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_15);  //开
+								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_15);  //关
+								break;					
+				default : break;										
+			}
+			
 		}
 		else if(W5500_Send_Delay_Counter >= 500)//定时发送字符串
 		{
