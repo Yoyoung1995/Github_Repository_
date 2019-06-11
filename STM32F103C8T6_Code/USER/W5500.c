@@ -40,8 +40,8 @@ unsigned char S0_Data;		//¶Ë¿Ú0½ÓÊÕºÍ·¢ËÍÊı¾İµÄ×´Ì¬,1:¶Ë¿Ú½ÓÊÕµ½Êı¾İ,2:¶Ë¿Ú·¢ËÍÊ
 #define S_TRANSMITOK 0x02	//¶Ë¿Ú·¢ËÍÒ»¸öÊı¾İ°üÍê³É 
 
 /***************----- ¶Ë¿ÚÊı¾İ»º³åÇø -----***************/
-unsigned char Rx_Buffer[2048];	//¶Ë¿Ú½ÓÊÕÊı¾İ»º³åÇø 
-unsigned char Tx_Buffer[2048];	//¶Ë¿Ú·¢ËÍÊı¾İ»º³åÇø 
+unsigned char Rx_Buffer[1024];	//¶Ë¿Ú½ÓÊÕÊı¾İ»º³åÇø 
+unsigned char Tx_Buffer[1024];	//¶Ë¿Ú·¢ËÍÊı¾İ»º³åÇø 
 
 unsigned char W5500_Interrupt;	//W5500ÖĞ¶Ï±êÖ¾(0:ÎŞÖĞ¶Ï,1:ÓĞÖĞ¶Ï)
 

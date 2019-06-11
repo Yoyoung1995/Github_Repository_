@@ -24,6 +24,7 @@
 
 #include "stm32f10x.h"		
 #include "W5500.h"			
+#include "stmflash.h"
 #include <string.h>
 
 void RCC_Configuration(void);		//设置系统时钟为72MHZ(这个可以根据需要改)
@@ -36,6 +37,15 @@ extern void Yoyung_GPIO_Init(void);
 
 unsigned int Timer2_Counter=0; //Timer2定时器计数变量(ms)
 unsigned int W5500_Send_Delay_Counter=0; //W5500发送延时计数变量(ms)
+
+
+//0~99半字 SetIP_Default   100~199半字 SetIP_User
+unsigned short SetIP_Default[100] = {192,168,1,1,255,255,255,0,0x0c,0x29,0xab,0x7c,0,0x01,192,168,1,199,5000,192,168,1,100,6000};
+unsigned short SetIP_User[100] = {0};
+//要写入到STM32 FLASH的字符串数组
+//const u8 TEXT_Buffer[]={"STM32F103 FLASH TEST"};
+#define SIZE 100		//数组长度  * 2 < 1024
+#define FLASH_SAVE_ADDR  0X0800FC00		//设置FLASH 保存地址(必须为偶数，且其值要大于本代码所占用FLASH的大小+0X08000000)
 
 /*******************************************************************************
 * 函数名  : W5500_Initialization
@@ -62,38 +72,38 @@ void W5500_Initialization(void)
 *******************************************************************************/
 void Load_Net_Parameters(void)
 {
-	Gateway_IP[0] = 192;//加载网关参数
-	Gateway_IP[1] = 168;
-	Gateway_IP[2] = 1;
-	Gateway_IP[3] = 1;
+	Gateway_IP[0] = SetIP_User[0]%256;//加载网关参数
+	Gateway_IP[1] = SetIP_User[1]%256;
+	Gateway_IP[2] = SetIP_User[2]%256;
+	Gateway_IP[3] = SetIP_User[3]%256;
 
-	Sub_Mask[0]=255;//加载子网掩码
-	Sub_Mask[1]=255;
-	Sub_Mask[2]=255;
-	Sub_Mask[3]=0;
+	Sub_Mask[0]=SetIP_User[4]%256;//加载子网掩码
+	Sub_Mask[1]=SetIP_User[5]%256;
+	Sub_Mask[2]=SetIP_User[6]%256;
+	Sub_Mask[3]=SetIP_User[7]%256;
 
-	Phy_Addr[0]=0x0c;//加载物理地址
-	Phy_Addr[1]=0x29;
-	Phy_Addr[2]=0xab;
-	Phy_Addr[3]=0x7c;
-	Phy_Addr[4]=0x00;
-	Phy_Addr[5]=0x01;
+	Phy_Addr[0]=SetIP_User[8]%256;//加载物理地址
+	Phy_Addr[1]=SetIP_User[9]%256;
+	Phy_Addr[2]=SetIP_User[10]%256;
+	Phy_Addr[3]=SetIP_User[11]%256;
+	Phy_Addr[4]=SetIP_User[12]%256;
+	Phy_Addr[5]=SetIP_User[13]%256;
 
-	IP_Addr[0]=192;//加载本机IP地址
-	IP_Addr[1]=168;
-	IP_Addr[2]=1;
-	IP_Addr[3]=199;
+	IP_Addr[0]=SetIP_User[14]%256;//加载本机IP地址
+	IP_Addr[1]=SetIP_User[15]%256;
+	IP_Addr[2]=SetIP_User[16]%256;
+	IP_Addr[3]=SetIP_User[17]%256;
 
-	S0_Port[0] = 0x13;//加载端口0的端口号5000 
-	S0_Port[1] = 0x88;
+	S0_Port[0] = SetIP_User[18]/256;//加载端口0的端口号5000 
+	S0_Port[1] = SetIP_User[18]%256;
 
-	S0_DIP[0]=192;//加载端口0的目的IP地址
-	S0_DIP[1]=168;
-	S0_DIP[2]=1;
-	S0_DIP[3]=100;
+	S0_DIP[0]=SetIP_User[19]%256;//加载端口0的目的IP地址
+	S0_DIP[1]=SetIP_User[20]%256;
+	S0_DIP[2]=SetIP_User[21]%256;
+	S0_DIP[3]=SetIP_User[22]%256;
 	
-	S0_DPort[0] = 0x17;//加载端口0的目的端口号6000
-	S0_DPort[1] = 0x70;
+	S0_DPort[0] = SetIP_User[23]/256;//加载端口0的目的端口号6000
+	S0_DPort[1] = SetIP_User[23]%256;
 
 	S0_Mode=TCP_CLIENT;//加载端口0的工作模式,TCP客户端模式
 }
@@ -165,10 +175,24 @@ void Process_Socket_Data(SOCKET s)
 int main(void)
 {
 	System_Initialization();	//STM32系统初始化函数(初始化STM32时钟及外设)
+	
+	//第一次运行程序，写入一次flash
+	STMFLASH_Read(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);
+	if(SetIP_User[0]==0xffff && SetIP_User[1]==0xffff)
+	{
+	STMFLASH_Write(FLASH_SAVE_ADDR,(u16*)SetIP_Default,SIZE);
+	memcpy((u16*)SetIP_User,(u16*)SetIP_Default,SIZE);
+	STMFLASH_Write(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);	
+	}
+	
+	STMFLASH_Read(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);	//flash读取网络参数
 	Load_Net_Parameters();		//装载网络参数	
 	W5500_Hardware_Reset();		//硬件复位W5500
 	W5500_Initialization();		//W5500初始货配置
 	Yoyung_GPIO_Init();				// GPIO/开关系统 初始化
+	
+	
+	
 	while (1)
 	{
 		W5500_Socket_Set();//W5500端口初始化配置
@@ -242,7 +266,16 @@ int main(void)
 								break;					
 				case 20: if(Rx_Buffer[1]==1)  GPIO_ResetBits(GPIOB, GPIO_Pin_15);  //开
 								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_15);  //关
-								break;					
+								break;	
+								
+				case 0x55:{int i=0;
+									for(i=0; i<SIZE;i++)    // i: SetIP_User IP地址的开始
+									{
+										SetIP_User[i] = Rx_Buffer[1+i];   // 1+i  : 1 偏移
+										STMFLASH_Write(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);	
+									}
+									}
+									break;
 				default : break;										
 			}
 			

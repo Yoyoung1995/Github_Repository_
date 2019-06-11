@@ -433,6 +433,11 @@
               <FileType>1</FileType>
               <FilePath>.\USER\W5500.c</FilePath>
             </File>
+            <File>
+              <FileName>stmflash.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\USER\stmflash.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
