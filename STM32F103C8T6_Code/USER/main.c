@@ -26,6 +26,8 @@
 #include "W5500.h"			
 #include "stmflash.h"
 #include <string.h>
+#include <stdlib.h>
+
 
 void RCC_Configuration(void);		//设置系统时钟为72MHZ(这个可以根据需要改)
 void NVIC_Configuration(void);		//STM32中断向量表配配置
@@ -38,13 +40,29 @@ extern void Yoyung_GPIO_Init(void);
 unsigned int Timer2_Counter=0; //Timer2定时器计数变量(ms)
 unsigned int W5500_Send_Delay_Counter=0; //W5500发送延时计数变量(ms)
 
+typedef struct xxxxbb {
+	unsigned short Gateway_IP[4];			
+	unsigned short Sub_Mask[4];
+	unsigned short Phy_Addr[6];
+	unsigned short IP_Addr[4];
+	unsigned short S0_Port;
+	unsigned short S0_DIP[4];
+	unsigned short S0_DPort;
+}SET_IP;
+SET_IP SetIP_Default={{192,168,1,1},
+											{255,255,255,0},
+											{0x0c,0x29,0xab,0x7c,0x00,0x01},
+											{192,168,1,199},
+											5000,
+											{192,168,1,100},
+											6000
+};
+SET_IP SetIP_User = {0};
+//flash中 0~99半字 SetIP_Default   100~199半字 SetIP_User
 
-//0~99半字 SetIP_Default   100~199半字 SetIP_User
-unsigned short SetIP_Default[100] = {192,168,1,1,255,255,255,0,0x0c,0x29,0xab,0x7c,0,0x01,192,168,1,199,5000,192,168,1,100,6000};
-unsigned short SetIP_User[100] = {0};
 //要写入到STM32 FLASH的字符串数组
 //const u8 TEXT_Buffer[]={"STM32F103 FLASH TEST"};
-#define SIZE 100		//数组长度  * 2 < 1024
+#define SIZE sizeof(SET_IP)		//数组长度  * 2 < 1024
 #define FLASH_SAVE_ADDR  0X0800FC00		//设置FLASH 保存地址(必须为偶数，且其值要大于本代码所占用FLASH的大小+0X08000000)
 
 /*******************************************************************************
@@ -72,38 +90,38 @@ void W5500_Initialization(void)
 *******************************************************************************/
 void Load_Net_Parameters(void)
 {
-	Gateway_IP[0] = SetIP_User[0]%256;//加载网关参数
-	Gateway_IP[1] = SetIP_User[1]%256;
-	Gateway_IP[2] = SetIP_User[2]%256;
-	Gateway_IP[3] = SetIP_User[3]%256;
+	Gateway_IP[0] = SetIP_User.Gateway_IP[0]%256;//加载网关参数
+	Gateway_IP[1] = SetIP_User.Gateway_IP[1]%256;
+	Gateway_IP[2] = SetIP_User.Gateway_IP[2]%256;
+	Gateway_IP[3] = SetIP_User.Gateway_IP[3]%256;
 
-	Sub_Mask[0]=SetIP_User[4]%256;//加载子网掩码
-	Sub_Mask[1]=SetIP_User[5]%256;
-	Sub_Mask[2]=SetIP_User[6]%256;
-	Sub_Mask[3]=SetIP_User[7]%256;
+	Sub_Mask[0]=SetIP_User.Sub_Mask[0]%256;//加载子网掩码
+	Sub_Mask[1]=SetIP_User.Sub_Mask[1]%256;
+	Sub_Mask[2]=SetIP_User.Sub_Mask[2]%256;
+	Sub_Mask[3]=SetIP_User.Sub_Mask[3]%256;
 
-	Phy_Addr[0]=SetIP_User[8]%256;//加载物理地址
-	Phy_Addr[1]=SetIP_User[9]%256;
-	Phy_Addr[2]=SetIP_User[10]%256;
-	Phy_Addr[3]=SetIP_User[11]%256;
-	Phy_Addr[4]=SetIP_User[12]%256;
-	Phy_Addr[5]=SetIP_User[13]%256;
+	Phy_Addr[0]=SetIP_User.Phy_Addr[0]%256;//加载物理地址
+	Phy_Addr[1]=SetIP_User.Phy_Addr[1]%256;
+	Phy_Addr[2]=SetIP_User.Phy_Addr[2]%256;
+	Phy_Addr[3]=SetIP_User.Phy_Addr[3]%256;
+	Phy_Addr[4]=SetIP_User.Phy_Addr[4]%256;
+	Phy_Addr[5]=SetIP_User.Phy_Addr[5]%256;
 
-	IP_Addr[0]=SetIP_User[14]%256;//加载本机IP地址
-	IP_Addr[1]=SetIP_User[15]%256;
-	IP_Addr[2]=SetIP_User[16]%256;
-	IP_Addr[3]=SetIP_User[17]%256;
+	IP_Addr[0]=SetIP_User.IP_Addr[0]%256;//加载本机IP地址
+	IP_Addr[1]=SetIP_User.IP_Addr[1]%256;
+	IP_Addr[2]=SetIP_User.IP_Addr[2]%256;
+	IP_Addr[3]=SetIP_User.IP_Addr[3]%256;
 
-	S0_Port[0] = SetIP_User[18]/256;//加载端口0的端口号5000 
-	S0_Port[1] = SetIP_User[18]%256;
+	S0_Port[0] = SetIP_User.S0_Port/256;//加载端口0的端口号5000 
+	S0_Port[1] = SetIP_User.S0_Port%256;
 
-	S0_DIP[0]=SetIP_User[19]%256;//加载端口0的目的IP地址
-	S0_DIP[1]=SetIP_User[20]%256;
-	S0_DIP[2]=SetIP_User[21]%256;
-	S0_DIP[3]=SetIP_User[22]%256;
+	S0_DIP[0]=SetIP_User.S0_DIP[0]%256;//加载端口0的目的IP地址
+	S0_DIP[1]=SetIP_User.S0_DIP[1]%256;
+	S0_DIP[2]=SetIP_User.S0_DIP[2]%256;
+	S0_DIP[3]=SetIP_User.S0_DIP[3]%256;
 	
-	S0_DPort[0] = SetIP_User[23]/256;//加载端口0的目的端口号6000
-	S0_DPort[1] = SetIP_User[23]%256;
+	S0_DPort[0] = SetIP_User.S0_DPort/256;//加载端口0的目的端口号6000
+	S0_DPort[1] = SetIP_User.S0_DPort%256;
 
 	S0_Mode=TCP_CLIENT;//加载端口0的工作模式,TCP客户端模式
 }
@@ -177,15 +195,17 @@ int main(void)
 	System_Initialization();	//STM32系统初始化函数(初始化STM32时钟及外设)
 	
 	//第一次运行程序，写入一次flash
-	STMFLASH_Read(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);
-	if(SetIP_User[0]==0xffff && SetIP_User[1]==0xffff)
+	STMFLASH_Read(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);
+	if(SetIP_User.Gateway_IP[0]==0xffff && SetIP_User.Gateway_IP[1]==0xffff)
 	{
-	STMFLASH_Write(FLASH_SAVE_ADDR,(u16*)SetIP_Default,SIZE);
-	memcpy((u16*)SetIP_User,(u16*)SetIP_Default,SIZE);
-	STMFLASH_Write(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);	
+	memcpy((u16*)&SetIP_User,(u16*)&SetIP_Default,SIZE);
+	STMFLASH_Write(FLASH_SAVE_ADDR,(u16*)&SetIP_Default,SIZE);
+	STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	
 	}
-	
-	STMFLASH_Read(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);	//flash读取网络参数
+
+
+//memcpy((u16*)&SetIP_User,(u16*)&SetIP_Default,SIZE);	
+  STMFLASH_Read(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	//flash读取网络参数
 	Load_Net_Parameters();		//装载网络参数	
 	W5500_Hardware_Reset();		//硬件复位W5500
 	W5500_Initialization();		//W5500初始货配置
@@ -268,16 +288,76 @@ int main(void)
 								else if (Rx_Buffer[1]==2)  GPIO_SetBits(GPIOB, GPIO_Pin_15);  //关
 								break;	
 								
-				case 0x55:{int i=0;
-									for(i=0; i<SIZE;i++)    // i: SetIP_User IP地址的开始
-									{
-										SetIP_User[i] = Rx_Buffer[1+i];   // 1+i  : 1 偏移
-										STMFLASH_Write(FLASH_SAVE_ADDR+(SIZE*2),(u16*)SetIP_User,SIZE);	
+				case 'S':{
+									/***** 将字符串拆解成几个小字符串 ******/
+									char Command[20] = "Set xxxxxxx";
+									char Part[6][10] = {"5000"};
+									char * p = NULL;
+									unsigned char j=0;
+									
+									p = strtok((char *)Rx_Buffer,":");
+									memcpy(Command,p,strlen(p)+1);
+									while( p != NULL ) 
+									{	
+										p = strtok(NULL, ".");
+										memcpy(Part[j],p,strlen(p)+1);
+										j++;
 									}
+									
+									if (0 == strncmp(Command,"Set Gateway_IP:",strlen(Command))  )
+									{
+										SetIP_User.Gateway_IP[0] = atoi(Part[0])%65536;
+										SetIP_User.Gateway_IP[1] = atoi(Part[1])%65536;
+										SetIP_User.Gateway_IP[2] = atoi(Part[2])%65536;
+										SetIP_User.Gateway_IP[3] = atoi(Part[3])%65536;
+									}
+									else if (0 == strncmp(Command,"Set Sub_Mask:",strlen(Command))  )
+									{
+										SetIP_User.Sub_Mask[0] = atoi(Part[0])%65536;
+										SetIP_User.Sub_Mask[1] = atoi(Part[1])%65536;
+										SetIP_User.Sub_Mask[2] = atoi(Part[2])%65536;
+										SetIP_User.Sub_Mask[3] = atoi(Part[3])%65536;
+									}
+									else if (0 == strncmp(Command,"Seet Phy_Addr:",strlen(Command))  )
+									{
+										SetIP_User.Phy_Addr[0] = atoi(Part[0])%65536;
+										SetIP_User.Phy_Addr[1] = atoi(Part[1])%65536;
+										SetIP_User.Phy_Addr[2] = atoi(Part[2])%65536;
+										SetIP_User.Phy_Addr[3] = atoi(Part[3])%65536;
+										SetIP_User.Phy_Addr[4] = atoi(Part[4])%65536;
+										SetIP_User.Phy_Addr[5] = atoi(Part[5])%65536;
+									}
+									else if (0 == strncmp(Command,"Set IP_Addr:",strlen(Command))  )
+									{
+										SetIP_User.IP_Addr[0] = atoi(Part[0])%65536;
+										SetIP_User.IP_Addr[1] = atoi(Part[1])%65536;
+										SetIP_User.IP_Addr[2] = atoi(Part[2])%65536;
+										SetIP_User.IP_Addr[3] = atoi(Part[3])%65536;
+									}
+									else if (0 == strncmp(Command,"Set S0_Port:",strlen(Command))  )
+									{
+										SetIP_User.S0_Port = atoi(Part[0])%65536;
+									}
+									else if (0 == strncmp(Command,"Set S0_DIP:",strlen(Command))  )
+									{
+										SetIP_User.S0_DIP[0] = atoi(Part[0])%65536;
+										SetIP_User.S0_DIP[1] = atoi(Part[1])%65536;
+										SetIP_User.S0_DIP[2] = atoi(Part[2])%65536;
+										SetIP_User.S0_DIP[3] = atoi(Part[3])%65536;										
+									}									
+									else if (0 == strncmp(Command,"Set S0_DPort:",strlen(Command))  )
+									{
+										SetIP_User.S0_DPort = atoi(Part[0])%65536;
+									}
+									
+									STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
+									//重新上电完成 更新配置到W5500模块
+									
 									}
 									break;
 				default : break;										
 			}
+			
 			
 		}
 		else if(W5500_Send_Delay_Counter >= 500)//定时发送字符串

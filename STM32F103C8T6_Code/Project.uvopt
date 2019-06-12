@@ -172,9 +172,9 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>183</LineNumber>
+          <LineNumber>328</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134219050</Address>
+          <Address>134220620</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
@@ -183,7 +183,7 @@
           <BreakIfRCount>1</BreakIfRCount>
           <Filename>F:\鏃犱汉鏈鸿В鍐虫柟妗?鐗╄仈缃戠郴缁?Yoyung 寮€鍏虫帶鍒剁郴缁?Github_Repository_\STM32F103C8T6_Code\USER\main.c</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\Project\USER/main.c\183</Expression>
+          <Expression>\\Project\USER/main.c\328</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -237,7 +237,7 @@
         <Mm>
           <WinNumber>1</WinNumber>
           <SubType>0</SubType>
-          <ItemText>0x800fcc8</ItemText>
+          <ItemText>0X0800FC64</ItemText>
           <AccSizeX>0</AccSizeX>
         </Mm>
       </MemoryWindow1>
