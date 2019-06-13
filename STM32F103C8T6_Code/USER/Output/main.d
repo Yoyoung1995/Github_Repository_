@@ -32,3 +32,4 @@
 .\user\output\main.o: USER\stmflash.h
 .\user\output\main.o: D:\Keil C51\ARM\ARMCC\Bin\..\include\string.h
 .\user\output\main.o: D:\Keil C51\ARM\ARMCC\Bin\..\include\stdlib.h
+.\user\output\main.o: D:\Keil C51\ARM\ARMCC\Bin\..\include\stdio.h

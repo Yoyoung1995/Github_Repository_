@@ -27,6 +27,7 @@
 #include "stmflash.h"
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 
 void RCC_Configuration(void);		//设置系统时钟为72MHZ(这个可以根据需要改)
@@ -61,6 +62,11 @@ SET_IP SetIP_User = {0};
 //flash中 0~99半字 SetIP_Default   100~199半字 SetIP_User
 
 //要写入到STM32 FLASH的字符串数组
+
+char Command[30] = {0};
+//char Part[6][10] = {0};
+//char * p = NULL;
+//unsigned char j=0;
 //const u8 TEXT_Buffer[]={"STM32F103 FLASH TEST"};
 #define SIZE sizeof(SET_IP)		//数组长度  * 2 < 1024
 #define FLASH_SAVE_ADDR  0X0800FC00		//设置FLASH 保存地址(必须为偶数，且其值要大于本代码所占用FLASH的大小+0X08000000)
@@ -191,7 +197,7 @@ void Process_Socket_Data(SOCKET s)
 * 说明    : 无
 *******************************************************************************/
 int main(void)
-{
+{								
 	System_Initialization();	//STM32系统初始化函数(初始化STM32时钟及外设)
 	
 	//第一次运行程序，写入一次flash
@@ -290,10 +296,10 @@ int main(void)
 								
 				case 'S':{
 									/***** 将字符串拆解成几个小字符串 ******/
-									char Command[20] = "Set xxxxxxx";
-									char Part[6][10] = {"5000"};
+//									char Command[20] = "Set xxxxxxx";
+									char Part[6][10] = {0};
 									char * p = NULL;
-									unsigned char j=0;
+									unsigned char j=0;								
 									
 									p = strtok((char *)Rx_Buffer,":");
 									memcpy(Command,p,strlen(p)+1);
@@ -304,21 +310,23 @@ int main(void)
 										j++;
 									}
 									
-									if (0 == strncmp(Command,"Set Gateway_IP:",strlen(Command))  )
+									if (0 == strncmp(Command,"Set Gateway_IP",strlen(Command))  )
 									{
 										SetIP_User.Gateway_IP[0] = atoi(Part[0])%65536;
 										SetIP_User.Gateway_IP[1] = atoi(Part[1])%65536;
 										SetIP_User.Gateway_IP[2] = atoi(Part[2])%65536;
 										SetIP_User.Gateway_IP[3] = atoi(Part[3])%65536;
+										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
 									}
-									else if (0 == strncmp(Command,"Set Sub_Mask:",strlen(Command))  )
+									else if (0 == strncmp(Command,"Set Sub_Mask",strlen(Command))  )
 									{
 										SetIP_User.Sub_Mask[0] = atoi(Part[0])%65536;
 										SetIP_User.Sub_Mask[1] = atoi(Part[1])%65536;
 										SetIP_User.Sub_Mask[2] = atoi(Part[2])%65536;
 										SetIP_User.Sub_Mask[3] = atoi(Part[3])%65536;
+										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
 									}
-									else if (0 == strncmp(Command,"Seet Phy_Addr:",strlen(Command))  )
+									else if (0 == strncmp(Command,"Set Phy_Addr",strlen("Set Phhy_Addr"))  )
 									{
 										SetIP_User.Phy_Addr[0] = atoi(Part[0])%65536;
 										SetIP_User.Phy_Addr[1] = atoi(Part[1])%65536;
@@ -326,31 +334,50 @@ int main(void)
 										SetIP_User.Phy_Addr[3] = atoi(Part[3])%65536;
 										SetIP_User.Phy_Addr[4] = atoi(Part[4])%65536;
 										SetIP_User.Phy_Addr[5] = atoi(Part[5])%65536;
+										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
 									}
-									else if (0 == strncmp(Command,"Set IP_Addr:",strlen(Command))  )
+									else if (0 == strncmp(Command,"Set IP_Addr",strlen(Command))  )
 									{
 										SetIP_User.IP_Addr[0] = atoi(Part[0])%65536;
 										SetIP_User.IP_Addr[1] = atoi(Part[1])%65536;
 										SetIP_User.IP_Addr[2] = atoi(Part[2])%65536;
 										SetIP_User.IP_Addr[3] = atoi(Part[3])%65536;
+										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
 									}
-									else if (0 == strncmp(Command,"Set S0_Port:",strlen(Command))  )
+									else if (0 == strncmp(Command,"Set S0_Port",strlen(Command))  )
 									{
 										SetIP_User.S0_Port = atoi(Part[0])%65536;
+										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
 									}
-									else if (0 == strncmp(Command,"Set S0_DIP:",strlen(Command))  )
+									else if (0 == strncmp(Command,"Set S0_DIP",strlen(Command))  )
 									{
 										SetIP_User.S0_DIP[0] = atoi(Part[0])%65536;
 										SetIP_User.S0_DIP[1] = atoi(Part[1])%65536;
 										SetIP_User.S0_DIP[2] = atoi(Part[2])%65536;
-										SetIP_User.S0_DIP[3] = atoi(Part[3])%65536;										
+										SetIP_User.S0_DIP[3] = atoi(Part[3])%65536;			
+										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash										
 									}									
-									else if (0 == strncmp(Command,"Set S0_DPort:",strlen(Command))  )
+									else if (0 == strncmp(Command,"Set S0_DPort",strlen(Command))  )
 									{
 										SetIP_User.S0_DPort = atoi(Part[0])%65536;
+										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
+									}
+									else if (0 == strncmp(Command,"Set Watch",strlen(Command))  )
+									{
+										snprintf( (char *)Tx_Buffer,sizeof(Tx_Buffer),
+																							"配置信息: \r\n网关IP地址:%hd.%hd.%hd.%hd \r\n子网掩码:%hd.%hd.%hd.%hd \r\n物理地址MAC:%x.%x.%x.%x.%x.%x \r\n本机IP地址:%hd.%hd.%hd.%hd \r\n端口0的端口号:%hd \r\n端口0目的IP地址:%hd.%hd.%hd.%hd \r\n端口0目的端口号:%hd \r\n",
+																							SetIP_User.Gateway_IP[0],SetIP_User.Gateway_IP[1],SetIP_User.Gateway_IP[2],SetIP_User.Gateway_IP[3],
+																							SetIP_User.Sub_Mask[0],SetIP_User.Sub_Mask[1],SetIP_User.Sub_Mask[2],SetIP_User.Sub_Mask[3],
+																							SetIP_User.Phy_Addr[0],SetIP_User.Phy_Addr[1],SetIP_User.Phy_Addr[2],SetIP_User.Phy_Addr[3],SetIP_User.Phy_Addr[4],SetIP_User.Phy_Addr[5],
+																							SetIP_User.IP_Addr[0],SetIP_User.IP_Addr[1],SetIP_User.IP_Addr[2],SetIP_User.IP_Addr[3],
+																							SetIP_User.S0_Port,
+																							SetIP_User.S0_DIP[0],SetIP_User.S0_DIP[1],SetIP_User.S0_DIP[2],SetIP_User.S0_DIP[3],
+																							SetIP_User.S0_DPort
+																							);
+										Write_SOCK_Data_Buffer(0, Tx_Buffer, strlen((char *)Tx_Buffer)+1 );
 									}
 									
-									STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
+//									STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
 									//重新上电完成 更新配置到W5500模块
 									
 									}
