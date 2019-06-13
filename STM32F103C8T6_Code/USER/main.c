@@ -217,7 +217,12 @@ int main(void)
 	W5500_Initialization();		//W5500初始货配置
 	Yoyung_GPIO_Init();				// GPIO/开关系统 初始化
 	
-	
+	//IP地址恢复默认
+	if ( 0 == GPIO_ReadInputDataBit(GPIOB,GPIO_Pin_8) )   
+	{
+		memcpy((u16*)&SetIP_User,(u16*)&SetIP_Default,SIZE);
+		STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
+	}
 	
 	while (1)
 	{
