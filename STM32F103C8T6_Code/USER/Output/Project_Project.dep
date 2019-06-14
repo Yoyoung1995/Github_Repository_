@@ -63,7 +63,7 @@ I (.\LIB\inc\stm32f10x_tim.h)(0x5CFC8849)
 I (.\LIB\inc\stm32f10x_usart.h)(0x5CFC8849)
 I (.\LIB\inc\stm32f10x_wwdg.h)(0x5CFC8849)
 I (.\LIB\inc\misc.h)(0x5CFC8849)
-F (.\USER\W5500.c)(0x5CFFD400)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I .\USER -I .\CMSIS -I .\LIB\inc-I"D:\Keil C51\ARM\RV31\INC"-I"D:\Keil C51\ARM\CMSIS\Include"-I"D:\Keil C51\ARM\Inc\ST\STM32F10x"-D__UVISION_VERSION="522"-o .\user\output\w5500.o --omf_browse .\user\output\w5500.crf --depend .\user\output\w5500.d)
+F (.\USER\W5500.c)(0x5D03AFFC)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I .\USER -I .\CMSIS -I .\LIB\inc-I"D:\Keil C51\ARM\RV31\INC"-I"D:\Keil C51\ARM\CMSIS\Include"-I"D:\Keil C51\ARM\Inc\ST\STM32F10x"-D__UVISION_VERSION="522"-o .\user\output\w5500.o --omf_browse .\user\output\w5500.crf --depend .\user\output\w5500.d)
 I (.\CMSIS\stm32f10x.h)(0x5CFC8849)
 I (.\CMSIS\core_cm3.h)(0x5CFC8849)
 I (D:\Keil C51\ARM\ARMCC\include\stdint.h)(0x57F606B8)
