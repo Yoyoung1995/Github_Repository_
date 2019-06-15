@@ -362,7 +362,7 @@ int main(void)
 										SetIP_User.S0_DIP[3] = atoi(Part[3])%65536;			
 										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash										
 									}									
-									else if (0 == strncmp(Command,"Set S0_DPort",strlen(Command))  )
+									else if (0 == strncmp(Command,"Set S0_DPort_",strlen(Command))  )
 									{
 										SetIP_User.S0_DPort = atoi(Part[0])%65536;
 										STMFLASH_Write(FLASH_SAVE_ADDR+100,(u16*)&SetIP_User,SIZE);	 //记录进flash
