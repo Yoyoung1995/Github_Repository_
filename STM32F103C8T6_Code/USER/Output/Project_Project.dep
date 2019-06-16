@@ -1,5 +1,5 @@
 Dependencies for Project 'Project', Target 'Project': (DO NOT MODIFY !)
-F (.\USER\main.c)(0x5D052229)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I .\USER -I .\CMSIS -I .\LIB\inc-I"D:\Keil C51\ARM\RV31\INC"-I"D:\Keil C51\ARM\CMSIS\Include"-I"D:\Keil C51\ARM\Inc\ST\STM32F10x"-D__UVISION_VERSION="522"-o .\user\output\main.o --omf_browse .\user\output\main.crf --depend .\user\output\main.d)
+F (.\USER\main.c)(0x5D05A500)(-c --cpu Cortex-M3 -g -O0 --apcs=interwork -I .\USER -I .\CMSIS -I .\LIB\inc-I"D:\Keil C51\ARM\RV31\INC"-I"D:\Keil C51\ARM\CMSIS\Include"-I"D:\Keil C51\ARM\Inc\ST\STM32F10x"-D__UVISION_VERSION="522"-o .\user\output\main.o --omf_browse .\user\output\main.crf --depend .\user\output\main.d)
 I (.\CMSIS\stm32f10x.h)(0x5D04F623)
 I (.\CMSIS\core_cm3.h)(0x5D04F623)
 I (D:\Keil C51\ARM\ARMCC\include\stdint.h)(0x57F606B8)

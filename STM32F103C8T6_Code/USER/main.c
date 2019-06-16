@@ -188,6 +188,30 @@ void Process_Socket_Data(SOCKET s)
 	Write_SOCK_Data_Buffer(s, Tx_Buffer, size);
 }
 
+/**
+ * 初始化看门狗
+ * prer:???:0~7(??? 3 ???!)
+ * ????=4*2^prer.??????? 256!
+ * rlr:???????:? 11 ???.
+ * ????(??):Tout=((4*2^prer)*rlr)/40 (ms).
+ */
+void IWDG_Init(u8 prer,u16 rlr)
+{
+    IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); /* ??????IWDG_PR?IWDG_RLR????*/
+    IWDG_SetPrescaler(prer);    /*??IWDG????:??IWDG????*/
+    IWDG_SetReload(rlr);     /*??IWDG????*/
+    IWDG_ReloadCounter();    /*??IWDG???????????IWDG???*/
+    IWDG_Enable();        /*??IWDG*/
+}
+
+/**
+ * 喂看门狗
+ */
+void IWDG_Feed(void)
+{
+    IWDG_ReloadCounter();    /*reload*/
+}
+
 /*******************************************************************************
 * 函数名  : main
 * 描述    : 主函数，用户程序从main函数开始运行
@@ -223,6 +247,9 @@ int main(void)
 		memcpy((u16*)&SetIP_User,(u16*)&SetIP_Default,SIZE);
 		STMFLASH_Write(FLASH_SAVE_ADDR+200,(u16*)&SetIP_User,SIZE);	 //记录进flash
 	}
+	
+//	IWDG_Init(4,625);//????????,????64,?????625,???????:64*625/40=1000ms=1s
+	IWDG_Init(5,625);   //溢出时间为2秒
 	
 	while (1)
 	{
@@ -402,6 +429,8 @@ int main(void)
 			}
 			W5500_Send_Delay_Counter=0;
 		}
+		
+		IWDG_Feed();
 	}
 }
 
