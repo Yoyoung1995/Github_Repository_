@@ -34,12 +34,13 @@ void RCC_Configuration(void);		//设置系统时钟为72MHZ(这个可以根据需要改)
 void NVIC_Configuration(void);		//STM32中断向量表配配置
 void Timer2_Init_Config(void);		//Timer2初始化配置
 void System_Initialization(void);	//STM32系统初始化函数(初始化STM32时钟及外设)
-void Delay(unsigned int d);			//延时函数(ms)
+void Delay(unsigned int d);			//延时函数(10ms)
 
 extern void Yoyung_GPIO_Init(void);
 
 unsigned int Timer2_Counter=0; //Timer2定时器计数变量(ms)
-unsigned int W5500_Send_Delay_Counter=0; //W5500发送延时计数变量(ms)
+unsigned int W5500_Send_Delay_Counter=0; //W5500发送延时计数变量(*10 ms)
+unsigned int W5500_P_Delay_Counter=0; //W5500心跳包延时计数变量(*10 ms)
 
 typedef struct xxxxbb {
 	unsigned short Gateway_IP[4];			
@@ -414,12 +415,18 @@ int main(void)
 									
 									}
 									break;
+									
+				case 'P' :   //心跳包 ,接收
+									Rx_Buffer[0] = 0;
+									
+									W5500_P_Delay_Counter = 0;
+									break;
 				default : break;										
 			}
 			
 			
 		}
-		else if(W5500_Send_Delay_Counter >= 500)//定时发送字符串
+		else if(W5500_Send_Delay_Counter >= 50)//定时发送字符串
 		{
 			if(S0_State == (S_INIT|S_CONN))
 			{
@@ -429,6 +436,22 @@ int main(void)
 			}
 			W5500_Send_Delay_Counter=0;
 		}
+		
+		/****30S内接收不到心跳包 的处理 *******/
+		if(W5500_P_Delay_Counter>3000)
+		{
+			System_Initialization();
+			STMFLASH_Read(FLASH_SAVE_ADDR+200,(u16*)&SetIP_User,SIZE);	//flash读取网络参数
+			Load_Net_Parameters();		//装载网络参数	
+			W5500_Hardware_Reset();		//硬件复位W5500
+			W5500_Initialization();		//W5500初始货配置
+			W5500_Socket_Set();//W5500端口初始化配置
+			W5500_Interrupt_Process();//W5500中断处理程序框架
+			
+			
+			W5500_P_Delay_Counter = 0;
+		}
+		
 		
 		IWDG_Feed();
 	}
@@ -535,7 +558,7 @@ void Timer2_Init_Config(void)
 	
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);		//使能Timer2时钟
 	
-	TIM_TimeBaseStructure.TIM_Period = 9;						//设置在下一个更新事件装入活动的自动重装载寄存器周期的值(计数到10为1ms)
+	TIM_TimeBaseStructure.TIM_Period = 99;						//设置在下一个更新事件装入活动的自动重装载寄存器周期的值(计数到10为1ms)
 	TIM_TimeBaseStructure.TIM_Prescaler = 7199;					//设置用来作为TIMx时钟频率除数的预分频值(10KHz的计数频率)
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;		//设置时钟分割:TDTS = TIM_CKD_DIV1
 	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;	//TIM向上计数模式
@@ -561,6 +584,7 @@ void TIM2_IRQHandler(void)
 		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 		Timer2_Counter++;
 		W5500_Send_Delay_Counter++;
+		W5500_P_Delay_Counter++;
 	}
 }
 
@@ -584,10 +608,10 @@ void System_Initialization(void)
 /*******************************************************************************
 * 函数名  : Delay
 * 描述    : 延时函数(ms)
-* 输入    : d:延时系数，单位为毫秒
+* 输入    : d:延时系数，单位为10毫秒
 * 输出    : 无
 * 返回    : 无 
-* 说明    : 延时是利用Timer2定时器产生的1毫秒的计数来实现的
+* 说明    : 延时是利用Timer2定时器产生的10毫秒的计数来实现的
 *******************************************************************************/
 void Delay(unsigned int d)
 {

@@ -250,7 +250,7 @@ extern unsigned char Tx_Buffer[1024];	//端口发送数据缓冲区
 extern unsigned char W5500_Interrupt;	//W5500中断标志(0:无中断,1:有中断)
 typedef unsigned char SOCKET;			//自定义端口号数据类型
 
-extern void Delay(unsigned int d);//延时函数(ms)
+extern void Delay(unsigned int d);//延时函数(d*10 ms)
 extern void W5500_GPIO_Configuration(void);//W5500 GPIO初始化配置
 extern void W5500_NVIC_Configuration(void);//W5500 接收引脚中断优先级设置
 extern void SPI_Configuration(void);//W5500 SPI初始化配置(STM32 SPI1)
